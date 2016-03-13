@@ -207,11 +207,11 @@ func TestMoveIntoAnotherNode(t *testing.T) {
 	obj4 := NewObject(image.Rect(0, 0, 2, 2))
 	obj5 := NewObject(image.Rect(0, 0, 2, 2))
 
-	qt.Insert(obj1, image.Pt(0, 0)) // root
-	qt.Insert(obj2, image.Pt(0, 0)) // root
-	qt.Insert(obj3, image.Pt(0, 0)) // root
-	qt.Insert(obj4, image.Pt(0, 0)) // root
-	qt.Insert(obj5, image.Pt(0, 0)) // root -> topleft
+	qt.Insert(obj1, image.Pt(0, 0))
+	qt.Insert(obj2, image.Pt(0, 0))
+	qt.Insert(obj3, image.Pt(0, 0))
+	qt.Insert(obj4, image.Pt(0, 0))
+	qt.Insert(obj5, image.Pt(0, 0))
 
 	beforenode := qt.children[topLeft].children[topLeft]
 	if l := len(beforenode.objects); l != 5 {
@@ -244,11 +244,11 @@ func TestMoveIntoSameNode(t *testing.T) {
 	obj4 := NewObject(image.Rect(0, 0, 2, 2))
 	obj5 := NewObject(image.Rect(0, 0, 2, 2))
 
-	qt.Insert(obj1, image.Pt(0, 0)) // root
-	qt.Insert(obj2, image.Pt(0, 0)) // root
-	qt.Insert(obj3, image.Pt(4, 4)) // root
-	qt.Insert(obj4, image.Pt(4, 4)) // root
-	qt.Insert(obj5, image.Pt(4, 4)) // root -> topleft
+	qt.Insert(obj1, image.Pt(0, 0))
+	qt.Insert(obj2, image.Pt(0, 0))
+	qt.Insert(obj3, image.Pt(4, 4))
+	qt.Insert(obj4, image.Pt(4, 4))
+	qt.Insert(obj5, image.Pt(4, 4))
 
 	beforenode := qt.children[topLeft]
 	if l := len(beforenode.objects); l != 2 {

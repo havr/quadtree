@@ -20,22 +20,31 @@ func New(bound image.Rectangle, capacity int) *QuadTree {
 	return &QuadTree{
 		capacity: capacity,
 		bound:    bound,
-		objects:  make([]*Object, 0),
+		objects:  make([]*Object, 0, capacity),
 	}
 }
 
+// It inserts an object into quadtree recursively.
+// Objects are moved when tree has been split.
+// An object can't be inserted into children will be inserted into parent again.
+// node field in Object struct will be set after being inserted for fast move and remove.
+// CurrentPos funcion of an object returns point given when this function called.
 func (qt *QuadTree) Insert(o *Object, p image.Point) bool {
 	return qt.insert(o, p)
 }
 
+// It removes an object from quadtree node refered by itself.
+// Refered node is set when inserted.
 func (qt *QuadTree) Remove(o *Object) bool {
 	return o.node != nil && o.node.remove(o)
 }
 
+// It searchs all objects overlapping given bound.
 func (qt *QuadTree) Search(bound image.Rectangle) []*Object {
 	return qt.search(bound)
 }
 
+// It moves an object into given point.
 func (qt *QuadTree) Move(o *Object, p image.Point) bool {
 	if o.node == nil {
 		return false
@@ -53,8 +62,6 @@ func (qt *QuadTree) search(bound image.Rectangle) []*Object {
 		return nil
 	}
 	var rtn []*Object
-
-	// be split already
 	if qt.children[topLeft] != nil {
 		for i, _ := range qt.children {
 			rtn = append(rtn, qt.children[i].search(bound)...)
@@ -77,7 +84,8 @@ func (qt *QuadTree) insert(o *Object, p image.Point) bool {
 	o.curpos = p
 	o.node = qt
 
-	if len(qt.objects) > qt.capacity && qt.bound.Dx()/2 > 0 && qt.bound.Dy()/2 > 0 && qt.children[topLeft] == nil {
+	// objects over capacity, has no children, can split more,
+	if len(qt.objects) > qt.capacity && qt.children[topLeft] == nil && qt.bound.Dx()/2 > 0 && qt.bound.Dy()/2 > 0 {
 		minX, minY := qt.bound.Min.X, qt.bound.Min.Y
 		maxX, maxY := qt.bound.Max.X, qt.bound.Max.Y
 		halfX, halfY := minX+qt.bound.Dx()/2, minY+qt.bound.Dy()/2
@@ -108,6 +116,7 @@ func (qt *QuadTree) insertIntoChildren(o *Object, p image.Point) bool {
 	return false
 }
 
+// It removes in own objects only, not recursively.
 func (qt *QuadTree) remove(o *Object) bool {
 	for i, myobj := range qt.objects {
 		if myobj == o {
