@@ -20,7 +20,7 @@ func New(bound image.Rectangle, capacity int) *QuadTree {
 	return &QuadTree{
 		capacity: capacity,
 		bound:    bound,
-		objects:  make([]*Object, 0, capacity),
+		objects:  make([]*Object, 0),
 	}
 }
 
