@@ -33,7 +33,7 @@ func (qt *QuadTree) Insert(o *Object, p image.Point) bool {
 	return o.node == nil && qt.insert(o, p)
 }
 
-// It removes an object from quadtree node refered by itself.
+// It removes an object from quadtree node refered by given object.
 // Refered node is set when inserted.
 func (qt *QuadTree) Remove(o *Object) bool {
 	return o.node != nil && o.node.remove(o)
