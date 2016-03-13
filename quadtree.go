@@ -30,7 +30,7 @@ func New(bound image.Rectangle, capacity int) *QuadTree {
 // node field in Object struct will be set after being inserted for fast move and remove.
 // CurrentPos funcion of an object returns point given when this function called.
 func (qt *QuadTree) Insert(o *Object, p image.Point) bool {
-	return qt.insert(o, p)
+	return o.node == nil && qt.insert(o, p)
 }
 
 // It removes an object from quadtree node refered by itself.

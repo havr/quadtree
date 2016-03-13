@@ -38,6 +38,20 @@ func TestSetCurretPosAfterInsert(t *testing.T) {
 	}
 }
 
+func TestFailToInsertObjectAlreadyInserted(t *testing.T) {
+	qt := New(image.Rect(0, 0, 10, 10), 20)
+
+	pos := image.Pt(4, 6)
+	newobj := NewObject(image.Rect(0, 0, 2, 2))
+
+	if !qt.Insert(newobj, pos) {
+		t.Errorf("failed to insert")
+	}
+	if qt.Insert(newobj, pos) {
+		t.Errorf("inserting again should be fail")
+	}
+}
+
 func TestSplitIntoChildrenWhenOverCapacity(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 2)
 	obj1 := NewObject(image.Rect(0, 0, 1, 1))
