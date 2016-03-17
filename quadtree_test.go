@@ -9,17 +9,17 @@ func TestFailToInsertOverBound(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 20)
 
 	// objbount over quadtree bound
-	if qt.Insert(NewObject(image.Rect(0, 0, 11, 10)), image.Pt(0, 0)) {
+	if qt.Insert(NewObject(11, 10), image.Pt(0, 0)) {
 		t.Errorf("should be failed to insert over bound")
 	}
 
 	// pos over quadtree bound
-	if qt.Insert(NewObject(image.Rect(0, 0, 1, 1)), image.Pt(10, 10)) {
+	if qt.Insert(NewObject(1, 1), image.Pt(10, 10)) {
 		t.Errorf("should be failed to insert over bound")
 	}
 
 	// pos over quadtree bound
-	if qt.Insert(NewObject(image.Rect(0, 0, 1, 1)), image.Pt(-1, 10)) {
+	if qt.Insert(NewObject(1, 1), image.Pt(-1, 10)) {
 		t.Errorf("should be failed to insert over bound")
 	}
 }
@@ -28,7 +28,7 @@ func TestSetCurretPosAfterInsert(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 20)
 
 	pos := image.Pt(4, 6)
-	newobj := NewObject(image.Rect(0, 0, 2, 2))
+	newobj := NewObject(2, 2)
 	qt.Insert(newobj, pos)
 	if curpos := newobj.CurrentPos(); pos != curpos {
 		t.Errorf("current pos invalid %v vs %v", pos, curpos)
@@ -42,7 +42,7 @@ func TestFailToInsertObjectAlreadyInserted(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 20)
 
 	pos := image.Pt(4, 6)
-	newobj := NewObject(image.Rect(0, 0, 2, 2))
+	newobj := NewObject(2, 2)
 
 	if !qt.Insert(newobj, pos) {
 		t.Errorf("failed to insert")
@@ -54,8 +54,8 @@ func TestFailToInsertObjectAlreadyInserted(t *testing.T) {
 
 func TestSplitIntoChildrenWhenOverCapacity(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 2)
-	obj1 := NewObject(image.Rect(0, 0, 1, 1))
-	obj2 := NewObject(image.Rect(0, 0, 8, 8))
+	obj1 := NewObject(1, 1)
+	obj2 := NewObject(8, 8)
 	if !qt.Insert(obj1, image.Pt(1, 1)) {
 		t.Errorf("failed to insert: %v", obj1)
 	}
@@ -66,7 +66,7 @@ func TestSplitIntoChildrenWhenOverCapacity(t *testing.T) {
 		t.Errorf("quadtree should not be split yet: %v", qt.children)
 	}
 
-	obj3 := NewObject(image.Rect(0, 0, 1, 1))
+	obj3 := NewObject(1, 1)
 	if !qt.Insert(obj3, image.Pt(1, 1)) {
 		t.Errorf("failed to insert: %v", obj3)
 	}
@@ -94,11 +94,11 @@ func TestSplitIntoChildrenWhenOverCapacity(t *testing.T) {
 func TestInsertIntoParentWhenCannotSplitMore(t *testing.T) {
 	qt := New(image.Rect(0, 0, 1, 4), 1)
 
-	qt.Insert(NewObject(image.Rect(0, 0, 1, 1)), image.Pt(0, 0))
-	qt.Insert(NewObject(image.Rect(0, 0, 1, 1)), image.Pt(0, 0))
-	qt.Insert(NewObject(image.Rect(0, 0, 1, 1)), image.Pt(0, 0))
-	qt.Insert(NewObject(image.Rect(0, 0, 1, 1)), image.Pt(0, 0))
-	qt.Insert(NewObject(image.Rect(0, 0, 1, 1)), image.Pt(0, 0))
+	qt.Insert(NewObject(1, 1), image.Pt(0, 0))
+	qt.Insert(NewObject(1, 1), image.Pt(0, 0))
+	qt.Insert(NewObject(1, 1), image.Pt(0, 0))
+	qt.Insert(NewObject(1, 1), image.Pt(0, 0))
+	qt.Insert(NewObject(1, 1), image.Pt(0, 0))
 
 	if len(qt.objects) != 5 {
 		t.Errorf("unexpected len: %v", len(qt.objects))
@@ -107,9 +107,9 @@ func TestInsertIntoParentWhenCannotSplitMore(t *testing.T) {
 
 func TestRemove(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 2)
-	obj1 := NewObject(image.Rect(0, 0, 1, 1))
-	obj2 := NewObject(image.Rect(0, 0, 8, 8))
-	obj3 := NewObject(image.Rect(0, 0, 1, 1))
+	obj1 := NewObject(1, 1)
+	obj2 := NewObject(8, 8)
+	obj3 := NewObject(1, 1)
 
 	qt.Insert(obj1, image.Pt(0, 0))
 	qt.Insert(obj2, image.Pt(0, 0))
@@ -148,7 +148,7 @@ func TestRemove(t *testing.T) {
 		t.Errorf("unexpected len: %v", l)
 	}
 
-	obj4 := NewObject(image.Rect(0, 0, 1, 1))
+	obj4 := NewObject(1, 1)
 	if qt.Remove(obj4) {
 		t.Errorf("not inserted object cannot be removed: %v", obj4)
 	}
@@ -156,11 +156,11 @@ func TestRemove(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 2)
-	obj1 := NewObject(image.Rect(0, 0, 2, 2))
-	obj2 := NewObject(image.Rect(0, 0, 8, 8))
-	obj3 := NewObject(image.Rect(0, 0, 3, 5))
-	obj4 := NewObject(image.Rect(0, 0, 4, 8))
-	obj5 := NewObject(image.Rect(0, 0, 1, 1))
+	obj1 := NewObject(2, 2)
+	obj2 := NewObject(8, 8)
+	obj3 := NewObject(3, 5)
+	obj4 := NewObject(4, 8)
+	obj5 := NewObject(1, 1)
 
 	qt.Insert(obj1, image.Pt(2, 4)) // max: [4, 6]
 	qt.Insert(obj2, image.Pt(2, 0)) // max: [10, 8]
@@ -197,7 +197,7 @@ func TestSearch(t *testing.T) {
 
 func TestMoveInNotSplitQuadTree(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 2)
-	obj1 := NewObject(image.Rect(0, 0, 2, 2))
+	obj1 := NewObject(2, 2)
 	qt.Insert(obj1, image.Pt(2, 2)) // max: [4, 6]
 
 	mvpos := image.Pt(8, 8)
@@ -215,11 +215,11 @@ func TestMoveInNotSplitQuadTree(t *testing.T) {
 
 func TestMoveIntoAnotherNode(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 4)
-	obj1 := NewObject(image.Rect(0, 0, 2, 2))
-	obj2 := NewObject(image.Rect(0, 0, 2, 2))
-	obj3 := NewObject(image.Rect(0, 0, 2, 2))
-	obj4 := NewObject(image.Rect(0, 0, 2, 2))
-	obj5 := NewObject(image.Rect(0, 0, 2, 2))
+	obj1 := NewObject(2, 2)
+	obj2 := NewObject(2, 2)
+	obj3 := NewObject(2, 2)
+	obj4 := NewObject(2, 2)
+	obj5 := NewObject(2, 2)
 
 	qt.Insert(obj1, image.Pt(0, 0))
 	qt.Insert(obj2, image.Pt(0, 0))
@@ -252,11 +252,11 @@ func TestMoveIntoAnotherNode(t *testing.T) {
 
 func TestMoveIntoSameNode(t *testing.T) {
 	qt := New(image.Rect(0, 0, 10, 10), 4)
-	obj1 := NewObject(image.Rect(0, 0, 2, 2))
-	obj2 := NewObject(image.Rect(0, 0, 2, 2))
-	obj3 := NewObject(image.Rect(0, 0, 2, 2))
-	obj4 := NewObject(image.Rect(0, 0, 2, 2))
-	obj5 := NewObject(image.Rect(0, 0, 2, 2))
+	obj1 := NewObject(2, 2)
+	obj2 := NewObject(2, 2)
+	obj3 := NewObject(2, 2)
+	obj4 := NewObject(2, 2)
+	obj5 := NewObject(2, 2)
 
 	qt.Insert(obj1, image.Pt(0, 0))
 	qt.Insert(obj2, image.Pt(0, 0))

@@ -15,8 +15,8 @@ func (o Object) String() string {
 	return fmt.Sprintf("bound:%v, curpos:%v, node in: %v", o.bound, o.curpos, o.node)
 }
 
-func NewObject(bound image.Rectangle) *Object {
-	return &Object{bound: bound}
+func NewObject(width, height int) *Object {
+	return &Object{bound: image.Rect(0, 0, width, height)}
 }
 
 func (o Object) Bound() image.Rectangle {
